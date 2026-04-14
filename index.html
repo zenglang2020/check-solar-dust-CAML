@@ -132,9 +132,9 @@
   .stamp.show{animation:stampAnim 1.2s ease forwards}
   .loading {
     display: inline-block;
-    width:20px;
-    height:20px;
-    border:3px solid rgba(255,255,255,.3);
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
     border-radius:50%;
     border-top-color:white;
     animation:spin 1s ease-in-out infinite;
@@ -241,7 +241,7 @@
       <span>Annual power generation loss</span>
       <span class="bill-hl" id="powerLoss"></span>
     </div>
-    <div class="bill-row.total">
+    <div class="bill-row total">
       <span>YEARLY DUST BILL</span>
       <span id="totalBill"></span>
     </div>
@@ -249,7 +249,6 @@
 </div>
 </div>
 <script>
-// 中亚南亚代表处核心城市环境数据
 const cityData = {
   Islamabad:     { h:60, pm:68, veg:28 },
   Karachi:       { h:65, pm:72, veg:12 },
@@ -346,7 +345,6 @@ function calculateBill(){
     const lossRate = getTotalLossRate(H,PM,VEG,tilt,dusty);
     const lossText = (lossRate*100).toFixed(2)+'%';
     const kW = area * 0.15;
-    // 中亚南亚辐照适配：年均等效利用小时数 1800h
     const annualGen = kW * 1800;
     const powerLoss = annualGen * lossRate * price;
     const total = totalClean + powerLoss;

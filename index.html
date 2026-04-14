@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module Dust Bill Statement</title>
+<style>
+  *{box-sizing:border-box;font-family:'Segoe UI',Roboto,sans-serif}
+  body{background:#f4f6f8;padding:20px 0;margin:0}
+  .container{max-width:750px;margin:0 auto}
+  .bill-box{
+    background:white;
+    border:1px solid #ddd;
+    border-radius:12px;
+    padding:36px 40px;
+    position:relative;
+    box-shadow:0 4px 20px rgba(0,0,0,0.05);
+    overflow:hidden;
+  }
+  .logo{
+    text-align:center;
+    margin-bottom:20px;
+    width:100%;
+    max-width:300px;
+    margin-left:auto;
+    margin-right:auto;
+  }
+  .logo img{
+    width:100%;
+    height:auto;
+    object-fit:contain;
+    background:#f8f8f8;
+    padding:10px;
+    border-radius:8px;
+  }
+  .bill-title{
+    font-size:24px;
+    font-weight:700;
+    text-align:center;
+    margin-bottom:6px;
+    color:#111;
+  }
+  .bill-subtitle{
+    text-align:center;font-size:14px;color:#666;margin-bottom:30px}
+  .form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:16px 20px;
+    margin-bottom:24px;
+  }
+  .form-item{display:flex;flex-direction:column;gap:6px}
+  .form-label{font-size:13px;font-weight:500;color:#333}
+  .form-input{
+    padding:10px 12px;
+    border:1px solid #ccc;
+    border-radius:6px;
+    font-size:14px;
+    direction:ltr;
+    text-align:left;
+  }
+  .calc-btn{
+    background:#003366;
+    color:white;
+    border:none;
+    border-radius:8px;
+    padding:14px;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    width:100%;
+    margin:20px 0;
+    transition:background 0.3s ease;
+  }
+  .calc-btn:hover{background:#00254a}
+  .result-bill{
+    margin-top:30px;
+    padding:24px;
+    border:1px solid #c5d3e2;
+    border-radius:10px;
+    background:#fcfdff;
+    display:none;
+    position:relative;
+    min-height:180px;
+  }
+  .result-title{
+    font-size:16px;
+    font-weight:600;
+    margin-bottom:16px;
+    color:#222;
+  }
+  .bill-row{
+    display:flex;
+    justify-content:space-between;
+    padding:8px 0;
+    font-size:14px;
+  }
+  .bill-row.total{
+    border-top:1px solid #999;
+    margin-top:10px;
+    padding-top:14px;
+    font-size:16px;
+    font-weight:700;
+    color:#003366;
+  }
+  .bill-hl{font-weight:600;color:#003366}
+  .stamp{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%, -50%) scale(0);
+    width:120px;
+    height:120px;
+    border:4px solid #d10e0e;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:14px;
+    font-weight:bold;
+    color:#d10e0e;
+    text-align:center;
+    line-height:1.3;
+    opacity:0;
+    z-index:1;
+    background:rgba(255,255,255,0.8);
+  }
+  @keyframes stampAnim{
+    0%{transform:translate(-50%, -50%) scale(0);opacity:0}
+    60%{transform:translate(-50%, -50%) scale(1.2);opacity:1}
+    100%{transform:translate(-50%, -50%) scale(1);opacity:1}
+  }
+  .stamp.show{animation:stampAnim 1.2s ease forwards}
+  .loading {
+    display: inline-block;
+    width:20px;
+    height:20px;
+    border:3px solid rgba(255,255,255,.3);
+    border-radius:50%;
+    border-top-color:white;
+    animation:spin 1s ease-in-out infinite;
+    margin-right:8px;
+  }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  @media(max-width:575px){
+    .form-grid{grid-template-columns:1fr}
+    .bill-box{padding:24px 20px}
+    .stamp{width:100px;height:100px;font-size:12px}
+    .bill-title{font-size:20px}
+  }
+</style>
+</head>
+<body>
+<div class="container">
+<div class="bill-box">
+  <div class="logo">
+    <img src="./longi-logo.png" alt="LONGi Solar Logo" onerror="this.src='https://via.placeholder.com/300x100?text=LONGi+Solar';">
+  </div>
+  <div class="bill-title">Check Your Module Dust Bill</div>
+  <div class="bill-subtitle">Calculation Results are for preliminary reference only.</div>
+  <div class="form-grid">
+    <div class="form-item">
+      <label class="form-label">Your City</label>
+      <select class="form-input" id="city">
+        <option value="Islamabad">Islamabad</option>
+        <option value="Karachi">Karachi</option>
+        <option value="Lahore">Lahore</option>
+        <option value="Kabul">Kabul</option>
+        <option value="NewDelhi">New Delhi</option>
+        <option value="Mumbai">Mumbai</option>
+        <option value="Bangalore">Bangalore</option>
+        <option value="Kolkata">Kolkata</option>
+        <option value="Dhaka">Dhaka</option>
+        <option value="Colombo">Colombo</option>
+        <option value="Kathmandu">Kathmandu</option>
+        <option value="Male">Male</option>
+        <option value="Tashkent">Tashkent</option>
+        <option value="Astana">Astana</option>
+        <option value="Almaty">Almaty</option>
+        <option value="Tbilisi">Tbilisi</option>
+        <option value="Baku">Baku</option>
+        <option value="Yerevan">Yerevan</option>
+        <option value="Dushanbe">Dushanbe</option>
+        <option value="Bishkek">Bishkek</option>
+        <option value="Ulaanbaatar">Ulaanbaatar</option>
+        <option value="Ashgabat">Ashgabat</option>
+        <option value="Ankara">Ankara</option>
+        <option value="Istanbul">Istanbul</option>
+        <option value="Izmir">Izmir</option>
+      </select>
+    </div>
+    <div class="form-item">
+      <label class="form-label">Avg Humidity (%)</label>
+      <input type="number" class="form-input" id="humidity" readonly>
+    </div>
+    <div class="form-item">
+      <label class="form-label">PM10 Annual (μg/m³)</label>
+      <input type="number" class="form-input" id="pm10" readonly>
+    </div>
+    <div class="form-item">
+      <label class="form-label">Vegetation Coverage (%)</label>
+      <input type="number" class="form-input" id="vegetation" readonly>
+    </div>
+    <div class="form-item">
+      <label class="form-label">Roof Area (m²)</label>
+      <input type="number" class="form-input" id="area" value="100" min="1">
+    </div>
+    <div class="form-item">
+      <label class="form-label">Roof Tilt Angle (0-60°)</label>
+      <input type="number" class="form-input" id="tilt" value="20" min="0" max="60">
+    </div>
+    <div class="form-item">
+      <label class="form-label">Cleaning Times/Year</label>
+      <input type="number" class="form-input" id="cleanTimes" value="4" min="0">
+    </div>
+    <div class="form-item">
+      <label class="form-label">Cost per Cleaning (USD)</label>
+      <input type="number" class="form-input" id="cleanCost" value="150" min="0">
+    </div>
+    <div class="form-item">
+      <label class="form-label">Dusty Days/Year (1-365)</label>
+      <input type="number" class="form-input" id="dustyDays" value="80" min="1" max="365">
+    </div>
+    <div class="form-item">
+      <label class="form-label">Electricity Price (USD/kWh)</label>
+      <input type="number" class="form-input" id="price" value="0.15" min="0" step="0.001">
+    </div>
+  </div>
+  <button class="calc-btn" onclick="calculateBill()" id="calcBtn">CHECK DUST BILL</button>
+  <div class="result-bill" id="resultBill">
+    <div class="stamp" id="stamp">Dust Report Approved</div>
+    <div class="result-title">Annual Dust Bill Calculation</div>
+    <div class="bill-row">
+      <span>Total power loss rate</span>
+      <span class="bill-hl" id="lossRateText"></span>
+    </div>
+    <div class="bill-row">
+      <span>Total cleaning cost per year</span>
+      <span class="bill-hl" id="cleanTotal"></span>
+    </div>
+    <div class="bill-row">
+      <span>Annual power generation loss</span>
+      <span class="bill-hl" id="powerLoss"></span>
+    </div>
+    <div class="bill-row.total">
+      <span>YEARLY DUST BILL</span>
+      <span id="totalBill"></span>
+    </div>
+  </div>
+</div>
+</div>
+<script>
+// 中亚南亚代表处核心城市环境数据
+const cityData = {
+  Islamabad:     { h:60, pm:68, veg:28 },
+  Karachi:       { h:65, pm:72, veg:12 },
+  Lahore:        { h:58, pm:75, veg:22 },
+  Kabul:         { h:48, pm:70, veg:15 },
+  NewDelhi:      { h:56, pm:82, veg:24 },
+  Mumbai:        { h:70, pm:66, veg:18 },
+  Bangalore:     { h:65, pm:48, veg:36 },
+  Kolkata:       { h:72, pm:62, veg:21 },
+  Dhaka:         { h:78, pm:69, veg:26 },
+  Colombo:       { h:75, pm:44, veg:32 },
+  Kathmandu:     { h:68, pm:58, veg:34 },
+  Male:          { h:78, pm:32, veg:16 },
+  Tashkent:      { h:52, pm:64, veg:22 },
+  Astana:        { h:50, pm:58, veg:18 },
+  Almaty:        { h:55, pm:52, veg:30 },
+  Tbilisi:       { h:68, pm:46, veg:38 },
+  Baku:          { h:65, pm:56, veg:14 },
+  Yerevan:       { h:58, pm:49, veg:26 },
+  Dushanbe:      { h:46, pm:72, veg:20 },
+  Bishkek:       { h:49, pm:54, veg:28 },
+  Ulaanbaatar:   { h:45, pm:88, veg:8 },
+  Ashgabat:      { h:42, pm:92, veg:5 },
+  Ankara:        { h:56, pm:50, veg:29 },
+  Istanbul:      { h:72, pm:45, veg:34 },
+  Izmir:         { h:68, pm:42, veg:31 }
+};
+
+document.getElementById('city').addEventListener('change', function(){
+  const c = this.value;
+  const d = cityData[c];
+  if(d) {
+    document.getElementById('humidity').value = d.h;
+    document.getElementById('pm10').value = d.pm;
+    document.getElementById('vegetation').value = d.veg;
+  }
+});
+window.onload = function(){
+  try {
+    document.getElementById('city').dispatchEvent(new Event('change'));
+  } catch (e) {
+    console.log('Initialization data:', e);
+  }
+}
+function fmtUSD(v){
+  return v.toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+function getTotalLossRate(H, PM, VEG, tilt, dusty){
+  let hLoss = 0;
+  if(H < 40) hLoss = 0.02;
+  else if(H >= 40 && H < 70) hLoss = 0.05;
+  else if(H >= 70) hLoss = 0.07;
+  let pmLoss = 0;
+  if(PM >= 40 && PM < 70) pmLoss = 0.03;
+  else if(PM >= 70) pmLoss = 0.05;
+  let vLoss = 0;
+  if(VEG >= 30 && VEG <= 45) vLoss = 0.01;
+  else if(VEG < 30) vLoss = 0.03;
+  let envLoss = hLoss * 0.8 + pmLoss * 1.0 + vLoss * 0.6;
+  let tiltAdd = 0;
+  if(tilt >= 0 && tilt <= 20) tiltAdd = 0.02;
+  else if(tilt > 20 && tilt <= 40) tiltAdd = 0.01;
+  let dustyAdd = 0;
+  if(dusty <= 60) dustyAdd = 0.01;
+  else if(dusty <= 200) dustyAdd = 0.02;
+  else dustyAdd = 0.03;
+  const totalLoss = envLoss + tiltAdd + dustyAdd;
+  return totalLoss;
+}
+function calculateBill(){
+  const btn = document.getElementById('calcBtn');
+  const btnText = btn.innerHTML;
+  
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading"></span>CHECKING...';
+  try {
+    const area    = Number(document.getElementById('area').value) || 0;
+    const tilt    = Number(document.getElementById('tilt').value) || 20;
+    const cleanT  = Number(document.getElementById('cleanTimes').value) || 0;
+    const cleanC  = Number(document.getElementById('cleanCost').value) || 0;
+    const dusty   = Number(document.getElementById('dustyDays').value) || 0;
+    const price   = Number(document.getElementById('price').value) || 0;
+    const H       = Number(document.getElementById('humidity').value) || 0;
+    const PM      = Number(document.getElementById('pm10').value) || 0;
+    const VEG     = Number(document.getElementById('vegetation').value) || 0;
+    if(area <= 0) throw new Error('Roof area must be greater than 0 m²');
+    if(price <= 0) throw new Error('Electricity price must be greater than 0 USD/kWh');
+    const totalClean = cleanT * cleanC;
+    const lossRate = getTotalLossRate(H,PM,VEG,tilt,dusty);
+    const lossText = (lossRate*100).toFixed(2)+'%';
+    const kW = area * 0.15;
+    // 中亚南亚辐照适配：年均等效利用小时数 1800h
+    const annualGen = kW * 1800;
+    const powerLoss = annualGen * lossRate * price;
+    const total = totalClean + powerLoss;
+    document.getElementById('lossRateText').innerText = lossText;
+    document.getElementById('cleanTotal').innerText  = fmtUSD(totalClean);
+    document.getElementById('powerLoss').innerText   = fmtUSD(powerLoss);
+    document.getElementById('totalBill').innerText   = fmtUSD(total);
+    const bill = document.getElementById('resultBill');
+    const stamp = document.getElementById('stamp');
+    bill.style.display = 'block';
+    stamp.classList.remove('show');
+    setTimeout(()=>stamp.classList.add('show'),100);
+  } catch (error) {
+    alert('Error: ' + error.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = btnText;
+  }
+}
+</script>
+</body>
+</html>
